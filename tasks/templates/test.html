@@ -1,0 +1,51 @@
+<!-- prettierd-ignore -->
+{% load static %}
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Static File</title>
+
+    <!-- prettierd-ignore -->
+    {% comment %}external css link{% endcomment %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  </head>
+
+  <body>
+    <h1 class="lal-bhai">Hello, this is static from test...</h1>
+
+    <div>
+      <img src="{% static 'images/chair.jpg' %}" />
+    </div>
+
+    <section>
+      <div>
+        {% for name in names %}
+          {{name}}
+        {% endfor %}
+
+        <p>total names are: {{count}}</p>
+
+        
+        {% with num=10 %}
+          <p>{{num}}</p>
+        {% endwith %}
+      </div>
+      <div>
+        <!-- prettierd-ignore -->
+        {% for age in ages %}
+        <!-- prettierd-ignore -->
+          {% if age == 23 %}
+            <!-- prettired-ignore -->
+            {{age}}
+          <!-- prettierd-ignore -->
+          {% endif %}
+
+        <!-- prettierd-ignore -->
+        {% endfor %}
+      </div>
+    </section>
+  </body>
+</html>
