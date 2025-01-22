@@ -55,3 +55,6 @@ class Employee(models.Model):
 
 	# tast_set --> reverse relation: 
 	# related name: task
+
+	def __str__(self):
+		return self.name
