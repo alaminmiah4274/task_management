@@ -67,3 +67,20 @@ def create_task(request):
 
 	context = {"form": form}
 	return render(request, "task_form.html", context)
+
+
+
+def show_task(request):
+	tasks = Task.objects.all()
+
+	# load specific task:
+	task_3 = Task.objects.get(id = 1)
+	# task_3 = Task.objects.get(pk = 3)
+	# task_3 = Task.objects.get(title = "Key data character house.")
+	# task_3 = Task.objects.get(status = "COMPLETED")
+
+	# getting first element:
+	first_task = Task.objects.first();
+
+	# return render(request, "show_task.html", {"tasks": tasks})
+	return render(request, "show_task.html", {"tasks": tasks, "task_3": task_3, "first_task": first_task})
