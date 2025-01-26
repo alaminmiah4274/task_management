@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from tasks.forms import TaskForm, TaskModelForm
-from tasks.models import Employee, Task
+from tasks.models import Employee, Task, TaskDetail, Project, Employee
+from datetime import date
+from django.db.models import Q, Count, Min, Max, Avg, Sum
 
 # Create your views here.
 
@@ -71,16 +73,66 @@ def create_task(request):
 
 
 def show_task(request):
-	tasks = Task.objects.all()
+	# tasks = Task.objects.all()
 
 	# load specific task:
-	task_3 = Task.objects.get(id = 1)
+	# task_3 = Task.objects.get(id = 1)
 	# task_3 = Task.objects.get(pk = 3)
 	# task_3 = Task.objects.get(title = "Key data character house.")
 	# task_3 = Task.objects.get(status = "COMPLETED")
 
 	# getting first element:
-	first_task = Task.objects.first();
+	# first_task = Task.objects.first();
 
-	# return render(request, "show_task.html", {"tasks": tasks})
-	return render(request, "show_task.html", {"tasks": tasks, "task_3": task_3, "first_task": first_task})
+	""" only filtering """
+	# tasks = Task.objects.filter(status = "PENDING")
+	# tasks = Task.objects.filter(status = "COMPLETED")
+
+	""" SHOWING THE TASKS WHOSE DUE DATE IS TODAY """
+	# tasks = Task.objects.filter(due_date = date.today())
+
+	""" SHOWING THE TASK WHOSE PRIORITY IS NOT LOW """
+	# tasks = TaskDetail.objects.exclude(priority = "L")
+
+	""" SHOW THE TASK THAT CONTAINS THE WROD 'PAPER' """
+	# tasks = Task.objects.filter(id__gt = 18)
+	# tasks = Task.objects.filter(title__icontains = "c", status = "PENDING")
+	# tasks = Task.objects.filter(Q(status = "PENDING") | Q(status = "IN_PROGRESS"))
+
+	# tasks = Task.objects.filter(title = "alsdkfalsf").exists()
+
+	""" QUERY OPTIMIZE WAY ---> RELATED DATA QUERY """
+	# select_related(ForeignKey, OneToOneField)
+	# tasks = Task.objects.all()
+	''' relation between Task and TaskDetail for OneToOneField '''
+	# tasks = Task.objects.select_related("details").all()
+
+	''' relation between TaskDetail and Task for OneToOneField '''
+	# tasks = TaskDetail.objects.select_related("task").all()
+
+	''' relation between Project and Task for ForeignKey '''
+	# tasks = Task.objects.select_related("project").all()
+
+
+	# prefetch_related(ManyToManyField, riverse ForeignKey)
+	''' riverse ForeignKey '''
+	# tasks = Project.objects.prefetch_related("task").all()
+
+	''' ManyToManyField '''
+	# tasks = Task.objects.prefetch_related("assigned_to").all()
+	''' reverse way '''
+	# tasks = Employee.objects.prefetch_related("task").all()
+
+
+
+	""" AGGREGATION """
+	# Count(), Sum(), Avg(), Min(), Max()
+	# task_count = Task.objects.aggregate(num_task = Count("id"))
+	''' ascedging order '''
+	projects = Project.objects.annotate(task_nums = Count("task")).order_by("task_nums")
+
+	''' descending order '''
+	# projects = Project.objects.annotate(task_nums = Count("task")).order_by("-task_nums")
+
+	return render(request, "show_task.html", {"projects": projects})
+	# return render(request, "show_task.html", {"tasks": tasks, "task_3": task_3, "first_task": first_task})

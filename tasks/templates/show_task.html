@@ -6,18 +6,51 @@
 	<title>Show Task</title>
 </head>
 <body>
-	<ul>
+	<!-- <ul>
 		{% for task in tasks %}
-			<li>{{task.project}}</li>
+			<li>
+				<p>{{task.name}}</p>
+				<span>{{task.task.title}}</span>
+
+				{% for project in task.task.all %}
+					<p>{{project.title}}</p>
+				{% endfor %}
+			</li>
 		{% endfor %}
-	</ul>
+	</ul> -->
 
-	<div>
-		{{task_3}}
-	</div>
+	<!-- <ul>
+		{% for task in tasks %}
+			<li>
+				<p>{{task.name}}</p>
+				
+				{% for task in task.task.all %}
+					<p>{{task.title}}</p>
+				{% endfor %}
+			</li>
+		{% endfor %}
+	</ul> -->
 
-	<div>
+	<!-- <div>
+		{{task_count.num_task}}
+	</div> -->
+
+	<ol>
+		{% for project in projects %}
+			<li>
+				<p>{{project.name}}</p>
+				<p>{{project.task_nums}}</p>
+			</li> 
+		{% endfor %}
+	</ol>
+
+
+	<!-- <div>
+		{{tasks}}
+	</div> -->
+
+	<!-- <div>
 		{{first_task}}
-	</div>
+	</div> -->
 </body>
 </html>

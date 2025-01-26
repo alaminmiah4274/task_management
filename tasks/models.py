@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 
-# manay to one relationship
+# many to one relationship
 class Task(models.Model):
 	# project = models.ForeignKey("Project", on_delete = models.CASCADE, null = True, blank = True)
 	# PENDING = "PENDING"
@@ -27,7 +27,7 @@ class Task(models.Model):
 	def __str__(self):
 		return self.title
 
-	# taskdetail --> reverse relation:
+	# TaskDetail --> reverse relation:
 	# details
 
 
@@ -65,7 +65,7 @@ class Project(models.Model):
 	# related name: task
 
 """
-to get all proejcts: p = Project.objects.all()
+to get all projects: p = Project.objects.all()
 to get first project: p.first()
 to get the id of first project: p.first().id
 """
@@ -75,7 +75,7 @@ class Employee(models.Model):
 	name = models.CharField(max_length = 100)
 	email = models.EmailField(unique = True)
 
-	# tast_set --> reverse relation: 
+	# task_set --> reverse relation: 
 	# related name: task
 
 	def __str__(self):
