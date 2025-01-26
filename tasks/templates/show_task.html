@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Show Task</title>
+</head>
+<body>
+	<!-- <ul>
+		{% for task in tasks %}
+			<li>
+				<p>{{task.name}}</p>
+				<span>{{task.task.title}}</span>
+
+				{% for project in task.task.all %}
+					<p>{{project.title}}</p>
+				{% endfor %}
+			</li>
+		{% endfor %}
+	</ul> -->
+
+	<!-- <ul>
+		{% for task in tasks %}
+			<li>
+				<p>{{task.name}}</p>
+				
+				{% for task in task.task.all %}
+					<p>{{task.title}}</p>
+				{% endfor %}
+			</li>
+		{% endfor %}
+	</ul> -->
+
+	<!-- <div>
+		{{task_count.num_task}}
+	</div> -->
+
+	<ol>
+		{% for project in projects %}
+			<li>
+				<p>{{project.name}}</p>
+				<p>{{project.task_nums}}</p>
+			</li> 
+		{% endfor %}
+	</ol>
+
+
+	<!-- <div>
+		{{tasks}}
+	</div> -->
+
+	<!-- <div>
+		{{first_task}}
+	</div> -->
+</body>
+</html>
