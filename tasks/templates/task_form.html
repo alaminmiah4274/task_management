@@ -11,18 +11,20 @@
 	<link rel="stylesheet" href="{% static 'css/output.css' %}">
 </head>
 <body>
-	<div class="w-1/2 mx-auto mt-8">
+	<div class="w-1/2 mx-auto my-8 shadow-xl p-5 border">
 		<div>
-		{% if message %}
-			<p>{{message}}</p>
-		{% endif %}
+			{% if messages %}
+				{% for message in messages %}
+					<div class="px-2 py-1 {% if message.tags == 'success' %} bg-green-500 {% endif %} ">{{message}}</div>
+				{% endfor %}
+			{% endif %}
 		</div>
 		
 		<form method="POST">
 			{% csrf_token %}
-			{{ form.as_p}}
-
-			<button type="submit" class="bg-rose-500 px-3 py-2 text-white rounded-md mt-5">Submit</button>
+			{{task_form.as_p}}
+			{{task_detail_form.as_p}}
+			<button type="submit" class="bg-rose-500 px-3 py-1 text-white rounded-md font-medium mt-5 w-full">SUBMIT</button>
 		</form>
 	</div>
 </body>
