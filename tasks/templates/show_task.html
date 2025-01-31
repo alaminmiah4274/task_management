@@ -1,9 +1,14 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Show Task</title>
+
+	<!-- css file link -->
+	<link rel="stylesheet" href="{% static 'css/output.css' %}">
 </head>
 <body>
 	<!-- <ul>
@@ -35,14 +40,24 @@
 		{{task_count.num_task}}
 	</div> -->
 
-	<ol>
-		{% for project in projects %}
+	<!-- <ol>
+		{% for oject in ojects %}
 			<li>
-				<p>{{project.name}}</p>
-				<p>{{project.task_nums}}</p>
+				<p>{{oject.name}}</p>
+				<p>{{oject.task_nums}}</p>
 			</li> 
 		{% endfor %}
-	</ol>
+	</ol> -->
+
+
+	<!-- for practice 7.5 purpose -->
+	<div>
+		{% for task in tasks %}
+			<p>{{task.title}}</p>
+			<p>{{task.due_date}}</p>
+			<p>{{task.status}}</p>
+		{% endfor %}
+	</div>
 
 
 	<!-- <div>

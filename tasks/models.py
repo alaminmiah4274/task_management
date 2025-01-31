@@ -42,9 +42,10 @@ class TaskDetail(models.Model):
 		(LOW, "LOW")
 	)
 	# std_id = models.CharField(max_length = 200, primary_key = True) # to make primary key
+	# assigned_to = models.CharField(max_length=250)
+
 
 	task = models.OneToOneField(Task, on_delete = models.CASCADE, related_name = "details")
-	assigned_to = models.CharField(max_length = 250)
 	priority = models.CharField(max_length = 1, choices = PRIORITY_OPTIONS, default = LOW)
 	notes = models.TextField(blank = True, null = True)
 
