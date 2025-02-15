@@ -1,4 +1,4 @@
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django import forms
 import re
@@ -64,3 +64,9 @@ class CustomSignUpForm(StyledFormMixin, forms.ModelForm):
 			raise ValidationError("The email is already in use")
 
 		return email
+
+
+
+class SignInForm(StyledFormMixin, AuthenticationForm):
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
