@@ -1,8 +1,9 @@
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group, Permission
 from django import forms
 import re
 from tasks.forms import StyledFormMixin
+from django.core.exceptions import ValidationError
 
 
 class SignUpForm(UserCreationForm):
@@ -70,3 +71,25 @@ class CustomSignUpForm(StyledFormMixin, forms.ModelForm):
 class SignInForm(StyledFormMixin, AuthenticationForm):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
+
+
+class AssignRoleForm(StyledFormMixin, forms.Form):
+	role = forms.ModelChoiceField(
+		queryset = Group.objects.all(),
+		empty_label = "Select A Role"
+	)
+
+
+
+class CreateGroupModelForm(StyledFormMixin, forms.ModelForm):
+	permissions = forms.ModelMultipleChoiceField(
+		queryset = Permission.objects.all(),
+		widget = forms.CheckboxSelectMultiple(),
+		required = False,
+		label = "Assign Group"
+	)
+
+	class Meta:
+		model = Group
+		fields = ["name", "permissions"]
+
