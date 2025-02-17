@@ -1,0 +1,33 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Sign In</title>
+
+	<!-- css link -->
+	<link rel="stylesheet" type="text/css" href="{% static 'css/output.css' %}">
+</head>
+<body>
+	<h1>Welcome to Authentication System</h1>
+	<div>
+		{% if messages %}
+			{% for message in messages %}
+				<div class="px-2 py-1 {% if message.tags == 'success' %}bg-green-500{% endif %}">{{message}}</div>
+			{% endfor %}
+		{% endif %}
+		
+		<form method="POST">
+			{% csrf_token %}
+			<!-- <input type="text" name="username" placeholder="Enter your username">
+			<input type="password" name="password" placeholder="Enter your password"> -->
+
+			{{form}}
+
+			<button class="bg-blue-500 px-2 py-1 rounded-lg" type="submit">Sign In</button>	
+		</form>
+	</div>
+</body>
+</html>
