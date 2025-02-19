@@ -57,7 +57,7 @@ class StyledFormMixin:
 class TaskModelForm(StyledFormMixin, forms.ModelForm):
 	class Meta:
 		model = Task
-		fields = ["title", "description", "due_date", "assigned_to"]
+		fields = ["title", "description", "due_date", "assigned_to"] 
 		# exclude = ["project", "is_completed", "created_at", "updated_at"]
 
 		widgets = {
@@ -93,7 +93,7 @@ class TaskModelForm(StyledFormMixin, forms.ModelForm):
 class TaskDetailModelForm(StyledFormMixin, forms.ModelForm):
 	class Meta:
 		model = TaskDetail
-		fields = ["priority", "notes"]
+		fields = ["priority", "notes", "asset"]
 
 	
 	# def __init__(self, *args, **kwargs):
