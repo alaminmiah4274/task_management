@@ -1,18 +1,19 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from tasks.forms import TaskForm, TaskModelForm, TaskDetailModelForm
-from tasks.models import Employee, Task, TaskDetail, Project, Employee
+from tasks.models import Task, TaskDetail, Project
 from datetime import date, timedelta
 from django.db.models import Q, Count, Min, Max, Avg, Sum
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test, login_required, permission_required
+from users.views import is_admin
 
 # Create your views here.
 
 
 # test decorator for manager:
 def is_manager(user):
-	return user.groups.filter(name = "Admin").exists()
+	return user.groups.filter(name = "Manager").exists()
 
 
 
@@ -108,7 +109,7 @@ def create_task(request):
 	if request.method == "POST":
 		""" for Django Model Form """
 		task_form = TaskModelForm(request.POST)
-		task_detail_form = TaskDetailModelForm(request.POST)
+		task_detail_form = TaskDetailModelForm(request.POST, request.FILES)
 
 		if task_form.is_valid() and task_detail_form.is_valid():
 			task = task_form.save()
@@ -251,3 +252,37 @@ def delete_task(request, id):
 	else:
 		messages.error(request, "Something Went Wrong")
 		return redirect("manager-dashboard")
+
+
+@login_required
+@permission_required("task.change_task", login_url = "no-permission")
+def task_details(request, task_id):
+	task = Task.objects.get(id = task_id)
+	status_choices = Task.STATUS_CHOICES
+
+	if request.method == "POST":
+		selected_status = request.POST.get("task_status")
+		task.status = selected_status
+		task.save()
+
+		return redirect("task-details", task.id)
+
+	context = {
+		"task": task,
+		"status_choices": status_choices
+	}
+
+	return render(request, "task_details.html", context)
+
+
+
+@login_required
+def dashboard(request):
+	if is_manager(request.user):
+		return redirect("manager-dashboard")
+	elif is_employee(request.user):
+		return redirect("employee-dashboard")
+	elif is_admin(request.user):
+		return redirect("admin-dashboard")
+
+	return redirect("no-permission")

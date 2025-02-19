@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Task Form</title>
+	<title>Task Create Form</title>
 
 	<!-- external css file -->
 	<link rel="stylesheet" href="{% static 'css/output.css' %}">
@@ -20,7 +20,7 @@
 			{% endif %}
 		</div>
 		
-		<form method="POST">
+		<form method="POST" enctype="multipart/form-data">
 			{% csrf_token %}
 			{{task_form.as_p}}
 			{{task_detail_form.as_p}}

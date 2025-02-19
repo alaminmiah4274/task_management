@@ -8,7 +8,7 @@
 {% block tasks %}
 
 <!-- table section -->
-<section class="mt-10">
+<section class="my-10">
   <div class="bg-white rounded-lg shadow-sm border">
 
     <!-- table header -->
@@ -31,16 +31,16 @@
           <!-- title -->
           <div class="flex items-center gap-2">
             <div class="w-3 h-3 bg-green-700 rounded-full"></div>
-            <div class=""> {{task.title}} </div>
+            <a href="{% url 'task-details' task.id %}"> {{task.title}} </a>
 
             <!-- task delete button -->
-            <form action="{% url 'delete-task' task.id %}" method="POST">
+            <!-- <form action="{% url 'delete-task' task.id %}" method="POST">
               {% csrf_token %}
               <button type="submit" class="px-2 bg-rose-500 rounded-md text-white text-sm">DELETE</button>
-            </form>
+            </form> -->
 
             <!-- task edit button -->
-            <a href="{% url 'update-task' task.id %}" class="px-2 bg-yellow-500 rounded-md text-sm text-white">EDIT</a>
+            <!-- <a href="{% url 'update-task' task.id %}" class="px-2 bg-yellow-500 rounded-md text-sm text-white">EDIT</a> -->
           </div>
 
           <!-- priority -->
@@ -56,7 +56,7 @@
                <div
                   class="w-8 h-8 rounded-full bg-blue-500 flex justify-center items-center text-white text-sm border-2 border-white"
               >
-                {{emp.name|slice:":1"}}
+                {{emp.first_name|slice:":1"}}
               </div>
             {% endfor %}
           </div>
