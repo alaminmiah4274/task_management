@@ -1,16 +1,9 @@
-{% load static %}
+{% extends "admin/dashboard.html" %}
 
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Show Task</title>
+{% block title %}Tasks{% endblock title %}
 
-	<!-- css file link -->
-	<link rel="stylesheet" href="{% static 'css/output.css' %}">
-</head>
-<body>
+{% block content %}
+<section>
 	<!-- <ul>
 		{% for task in tasks %}
 			<li>
@@ -40,24 +33,26 @@
 		{{task_count.num_task}}
 	</div> -->
 
-	<!-- <ol>
-		{% for oject in ojects %}
+	<ol>
+		{% for project in projects %}
 			<li>
-				<p>{{oject.name}}</p>
-				<p>{{oject.task_nums}}</p>
+				<p>{{project.name}}</p>
+				<p>{{project.task_nums}}</p>
 			</li> 
 		{% endfor %}
-	</ol> -->
+	</ol>
 
 
 	<!-- for practice 7.5 purpose -->
-	<div>
+	<!-- <div>
 		{% for task in tasks %}
-			<p>{{task.title}}</p>
-			<p>{{task.due_date}}</p>
-			<p>{{task.status}}</p>
+			<div class="mb-10">
+				<p>{{task.name}}</p>
+				<p>{{task.due_date}}</p>
+				<p>{{task.status}}</p>
+			</div>
 		{% endfor %}
-	</div>
+	</div> -->
 
 
 	<!-- <div>
@@ -67,5 +62,5 @@
 	<!-- <div>
 		{{first_task}}
 	</div> -->
-</body>
-</html>
+</section>
+{% endblock content %}
