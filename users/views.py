@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, HttpResponse
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group
 from django.contrib.auth import login, logout
 from users.forms import (
     CustomSignUpForm,
@@ -9,6 +9,7 @@ from users.forms import (
     CustomPasswordChangeForm,
     CustomPasswordResetForm,
     CustomPasswordResetConfirmForm,
+    EditProfileForm,
 )
 from django.contrib import messages
 from django.contrib.auth.tokens import default_token_generator
@@ -20,8 +21,12 @@ from django.contrib.auth.views import (
     PasswordResetView,
     PasswordResetConfirmView,
 )
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, UpdateView
 from django.urls import reverse_lazy
+from django.contrib.auth import get_user_model
+
+
+User = get_user_model()
 
 
 # test for users:
@@ -207,6 +212,8 @@ class ProfileView(TemplateView):
         context["name"] = user.get_full_name()
         context["member_since"] = user.date_joined
         context["last_login"] = user.last_login
+        context["bio"] = user.bio
+        context["profile_image"] = user.profile_image
 
         return context
 
@@ -243,11 +250,59 @@ class CustomPasswordResetConfirmView(PasswordResetConfirmView):
         return super().form_valid(form)
 
 
-# john_doe: Aus@2024
-# the_rock: Aus@2024
-# the_hammer: Ban@2024
-# chris_brook: Ban@2024
+"""
+class EditProfileView(UpdateView):
+    model = User
+    form_class = EditProfileForm
+    template_name = "accounts/update_profile.html"
+    context_object_form = "form"
+    success_url = reverse_lazy("profile")
+
+    def get_object(self):
+        return self.request.user
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["userprofile"] = UserProfile.objects.get(user=self.request.user)
+        return kwargs
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user_profile = UserProfile.objects.get(user=self.request.user)
+        context["form"] = self.form_class(
+            instance=self.object, userprofile=user_profile
+        )
+
+        return context
+
+    def form_save(self, form):
+        form.save(commit=True)
+        return super().form_valid(form)
+"""
+
+
+class EditProfileView(UpdateView):
+    model = User
+    form_class = EditProfileForm
+    template_name = "accounts/update_profile.html"
+    context_object_form = "form"
+    success_url = reverse_lazy("profile")
+
+    def get_object(self):
+        return self.request.user
+
+    def form_save(self, form):
+        form.save()
+        return super().form_save(form)
+
+
+# john_doe: Aus@2024 | active
+# the_hammer: Ban@2024 | active
+# chris_brook: Ban@2024 | active
 # chris_pattern: Doe@2024-->Change@2024 | employee
 # bad_boy: Doe@2024-->Bad@2024 | user
 # shafim_rahman: Man@2024 | manager
 # admin: 1234 | admin
+# donald_obama: Bama@2024 | user
+# elon_trump: Lon@2024 | user
+# dr_yunus: Nus@2024 | user

@@ -5,11 +5,16 @@ from django.contrib.auth.forms import (
     PasswordResetForm,
     SetPasswordForm,
 )
-from django.contrib.auth.models import User, Group, Permission
+from django.contrib.auth.models import Group, Permission
 from django import forms
 import re
 from tasks.forms import StyledFormMixin
 from django.core.exceptions import ValidationError
+from users.models import CustomUser
+from django.contrib.auth import get_user_model
+
+
+User = get_user_model()
 
 
 class SignUpForm(UserCreationForm):
@@ -118,3 +123,46 @@ class CustomPasswordResetForm(StyledFormMixin, PasswordResetForm):
 
 class CustomPasswordResetConfirmForm(StyledFormMixin, SetPasswordForm):
     pass
+
+
+"""
+class EditProfileForm(StyledFormMixin, forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ["email", "first_name", "last_name"]
+
+    bio = forms.CharField(required=False, label="bio")
+    profile_image = forms.ImageField(required=False, label="profile_image")
+
+    def __init__(self, *args, **kwargs):
+        self.userprofile = kwargs.pop("userprofile", None)
+        super().__init__(*args, **kwargs)
+
+        # handle error:
+
+        if self.userprofile:
+            self.fields["bio"].initial = self.userprofile.bio
+            self.fields["profile_image"].initial = self.userprofile.profile_image
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+
+        # if user is exits than save it:
+        if self.userprofile:
+            self.userprofile.bio = self.cleaned_data.get("bio")
+            self.userprofile.profile_image = self.cleaned_data.get("profile_image")
+
+            if commit:
+                self.userprofile.save()
+
+        if commit:
+            user.save()
+
+        return user
+"""
+
+
+class EditProfileForm(StyledFormMixin, forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ["email", "first_name", "last_name", "bio", "profile_image"]
