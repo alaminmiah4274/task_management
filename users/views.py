@@ -17,13 +17,16 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Prefetch
 from django.contrib.auth.views import (
     LoginView,
+    LogoutView,
     PasswordChangeView,
     PasswordResetView,
     PasswordResetConfirmView,
 )
-from django.views.generic import TemplateView, UpdateView
+from django.views.generic import TemplateView, UpdateView, CreateView, ListView
 from django.urls import reverse_lazy
 from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.views import View
 
 
 User = get_user_model()
@@ -104,6 +107,12 @@ def sign_out(request):
     return render(request, "home.html")
 
 
+# SIGN OUT CLASS VIEW:
+class CustomSignOutView(LoginRequiredMixin, LogoutView):
+    login_url = "no-permission"
+    next_page = reverse_lazy("sign-in")
+
+
 def activate_user(request, user_id, token):
     try:
         user = User.objects.get(id=user_id)
@@ -171,6 +180,38 @@ def assign_role(request, user_id):
     return render(request, "admin/assign_role.html", context)
 
 
+# ASSIGN ROLE CLASS VIEW:
+class AssignRoleView(UserPassesTestMixin, View):
+    login_url = "no-permission"
+    template_name = "admin/assign_role.html"
+
+    def test_func(self):
+        return is_admin(self.request.user)
+
+    def get(self, request, *args, **kwargs):
+        form = AssignRoleForm()
+        context = {"form": form}
+        return render(request, self.template_name, context)
+
+    def post(self, request, user_id):
+        form = AssignRoleForm(request.POST)
+        user = User.objects.get(id=user_id)
+
+        if form.is_valid():
+            role = form.cleaned_data.get("role")
+            user.groups.clear()
+            user.groups.add(role)
+
+            messages.success(
+                request,
+                f"User {user.username} has been assigned to the {role.name} role",
+            )
+            return redirect("admin-dashboard")
+
+        context = {"form": form}
+        return render(request, self.template_name, context)
+
+
 @user_passes_test(is_admin, login_url="no-permission")
 def create_group(request):
     form = CreateGroupModelForm()
@@ -191,6 +232,31 @@ def create_group(request):
     return render(request, "admin/create_group.html", context)
 
 
+# CREATE GROUP CLASS VIEW:
+class CreateGroupView(UserPassesTestMixin, CreateView):
+    login_url = "no-permission"
+    form_class = CreateGroupModelForm
+    template_name = "admin/create_group.html"
+    success_url = reverse_lazy("create-group")
+
+    def test_func(self):
+        return is_admin(self.request.user)
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+
+        messages.success(
+            self.request, f"Group {self.object.name} has been created successfully"
+        )
+
+        return response
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = self.get_form()
+        return context
+
+
 @user_passes_test(is_admin, login_url="no-permission")
 def group_list(request):
     groups = Group.objects.prefetch_related("permissions").all()
@@ -198,6 +264,20 @@ def group_list(request):
     context = {"groups": groups}
 
     return render(request, "admin/group_list.html", context)
+
+
+# GROUP LIST CLASS VIEW:
+class GroupListView(UserPassesTestMixin, ListView):
+    model = Group
+    template_name = "admin/group_list.html"
+    login_url = "no-permission"
+    context_object_name = "groups"
+
+    def test_func(self):
+        return is_admin(self.request.user)
+
+    def get_queryset(self):
+        return Group.objects.prefetch_related("permissions").all()
 
 
 class ProfileView(TemplateView):

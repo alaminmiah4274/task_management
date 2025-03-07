@@ -6,7 +6,6 @@ from datetime import date, timedelta
 from django.db.models import Q, Count
 from django.contrib import messages
 from django.contrib.auth.decorators import (
-    user_passes_test,
     login_required,
     permission_required,
 )
@@ -15,7 +14,14 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic.base import ContextMixin
-from django.views.generic import ListView, DetailView, UpdateView
+from django.views.generic import (
+    ListView,
+    DetailView,
+    UpdateView,
+    TemplateView,
+    DeleteView,
+)
+from django.urls import reverse_lazy
 
 
 # class based view re-use example:
@@ -87,10 +93,55 @@ def manager_dashboard(request):
     return render(request, "dashboard/manager_dashboard.html", context)
 
 
+# MANAGER DASHBOARD CLASS VIEW:
+class ManagerDashboardView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    model = Task
+    template_name = "dashboard/manager_dashboard.html"
+    context_object_name = "tasks"
+    permission_required = "tasks.view_task"
+    login_url = "no-permission"
+
+    def get_queryset(self):
+        type = self.request.GET.get("type", "all")
+
+        base_query = Task.objects.select_related("details").prefetch_related(
+            "assigned_to"
+        )
+
+        if type == "completed":
+            return base_query.filter(status="COMPLETED")
+        elif type == "in_progress":
+            return base_query.filter(status="IN_PROGRESS")
+        elif type == "pending":
+            return base_query.filter(status="PENDING")
+        else:
+            return base_query.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        counts = Task.objects.aggregate(
+            total=Count("id"),
+            completed=Count("id", filter=Q(status="COMPLETED")),
+            in_progress=Count("id", filter=Q(status="IN_PROGRESS")),
+            pending=Count("id", filter=Q(status="PENDING")),
+        )
+
+        context["counts"] = counts
+        return context
+
+
 @login_required
 @permission_required("tasks.view_task", login_url="no-permission")
 def employee_dashboard(request):
     return render(request, "dashboard/employee_dashboard.html")
+
+
+# EMPLOYEE DASHBOARD CLASS VIEW:
+class EmployeeDashboardView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
+    template_name = "dashboard/employee_dashboard.html"
+    permission_required = "tasks.view_task"
+    login_url = "no-permission"
 
 
 def test_static(request):
@@ -186,13 +237,13 @@ class CreateTask(ContextMixin, LoginRequiredMixin, PermissionRequiredMixin, View
 
     def post(self, request, *args, **kwargs):
         task_form = TaskModelForm(request.POST)
-        task_detail_form = TaskDetailModelForm(request.POST)
+        task_detail_form = TaskDetailModelForm(request.POST, request.FILES)
 
         if task_form.is_valid() and task_detail_form.is_valid():
             task = task_form.save()
             task_detail = task_detail_form.save(commit=False)
             task_detail.task = task
-            task.save()
+            task_detail.save()
 
             messages.success(request, "Task Created Successfully")
             context = self.get_context_data(
@@ -365,6 +416,27 @@ def delete_task(request, id):
     else:
         messages.error(request, "Something Went Wrong")
         return redirect("manager-dashboard")
+
+
+# TASK DELETE CLASS VIEW:
+class TaskDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+    model = Task
+    permission_required = "tasks.delete_task"
+    login_url = "no-permission"
+    success_url = reverse_lazy("manager-dashboard")
+    pk_url_kwarg = "id"
+
+    def get_success_url(self):
+        messages.success(self.request, "Task Deleted Successfully")
+        return super().get_success_url()
+
+    def delete(self, request, *args, **kwargs):
+        try:
+            response = super().delete(request, *args, *kwargs)
+            return response
+        except Exception as e:
+            messages.error(self.request, "Something Went Wrong")
+            return redirect("manager-dashboard")
 
 
 @login_required
